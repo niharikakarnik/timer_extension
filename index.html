@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css" integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls" crossorigin="anonymous">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Hours</title>
+</head>
+<body>
+    <div>
+        <h1>Track Your Hours &#128188;</h1>
+
+        <label for="client-dropdown">Choose a client:</label>
+        <select id="client-dropdown" name="client">
+            <option value="">--Select Client--</option>
+            <option value="add-new">Add New Client</option>
+        </select>
+    
+        <div id="add-client-form" style="display:none;">
+            <h2>Add New Client</h2>
+            <label for="new-client-name">Client Name:</label>
+            <input type="text" id="new-client-name" name="new-client-name" placeholder="Enter client name">
+            <button type="button" onclick="addClient()">Add Client</button>
+        </div>
+
+        <h1 id="timer">00:00:00</h1>
+        <button id="start" onclick="startTimer()">Start</button>
+        <button id="stop" onclick="stopTimer()">Stop</button>
+        <button id="reset" onclick="resetTimer()">Reset</button>
+    </div>
+</body>
+<script src="script.js"></script>
+</html>
