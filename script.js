@@ -2,11 +2,42 @@ const dropdown = document.getElementById('client-dropdown');
 const addClientForm = document.getElementById('add-client-form');
 const timerContainer = document.getElementById('timer-container');
 const timerDisplay = document.getElementById('timer');
+const addClientButton = document.getElementById('add-client-button'); 
+const startButton = document.getElementById('start-button');
+const stopButton = document.getElementById('stop-button'); 
+const resetButton = document.getElementById('reset-button');
+
 
 let clientTimers = {};  // Object to keep track of time for each client
 let currentClient = null;
 let seconds = 0;
 let timerInterval = null;
+
+addClientButton.addEventListener('click', addClient);
+startButton.addEventListener('click', startTimer);
+stopButton.addEventListener('click', stopTimer);
+resetButton.addEventListener('click', resetTimer);
+
+// Load saved timers when the page loads
+window.onload = function() {
+    chrome.storage.sync.get('timers', function(data) {
+        if (data.timers) {
+            clientTimers = data.timers;
+            populateDropdown();  // Populate the dropdown with saved clients
+        }
+    });
+};
+
+function populateDropdown() {
+    for (let client in clientTimers) {
+        if (clientTimers.hasOwnProperty(client)) {
+            const option = document.createElement('option');
+            option.text = client.charAt(0).toUpperCase() + client.slice(1).replace(/-/g, ' ');
+            option.value = client;
+            dropdown.add(option, dropdown.options[dropdown.options.length - 1]);
+        }
+    }
+}
 
 dropdown.addEventListener('change', function() {
     if (this.value === 'add-new') {
@@ -46,6 +77,7 @@ function addClient() {
     } else {
         alert('Please enter a client name.');
     }
+    saveTimers();
 }
 
 function startTimer() {
@@ -61,13 +93,18 @@ function startTimer() {
 function stopTimer() {
     clearInterval(timerInterval);
     timerInterval = null;
+    saveTimers();
 }
 
 function resetTimer() {
-    stopTimer();
-    seconds = 0;
-    clientTimers[currentClient] = 0;  // Reset the time for the current client
-    document.getElementById('timer').innerText = formatTime(seconds);
+    stopTimer(); // Stop the timer if it's running
+    seconds = 0; // Reset the seconds count
+    if (currentClient) {
+        console.log('Resetting timer for ' + currentClient);
+        clientTimers[currentClient] = 0; // Reset the time for the current client
+    }
+    updateTimerDisplay(); // Update the timer display
+    saveTimers(); // Save the reset timer to chrome.storage
 }
 
 function formatTime(seconds) {
@@ -83,4 +120,8 @@ function pad(value) {
 
 function updateTimerDisplay() {
     document.getElementById('timer').innerText = formatTime(seconds);
+}
+
+function saveTimers() {
+    chrome.storage.sync.set({ timers: clientTimers });
 }
